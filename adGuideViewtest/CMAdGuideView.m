@@ -20,7 +20,11 @@
 #endif
 
 #define WEAKSELF typeof(self) __weak weakSelf = self;
+//角度转弧度
 #define   DEGREES_TO_RADIANS(degrees)  ((M_PI * degrees)/ 180)
+
+//动画持续时间
+#define   AnimationDuration  0.3
 
 @interface CMAdGuideView()
 
@@ -108,7 +112,7 @@
     [self.layer addSublayer:layer];
     self.mylayer = layer;
     [self testScale];
-//    [CMControllerManager fonctionStatisWithViewController:self info:@"仿滴滴幕帘广告"];
+    //    [CMControllerManager fonctionStatisWithViewController:self info:@"仿滴滴幕帘广告"];
 }
 
 - (void)testScale
@@ -134,7 +138,7 @@
     // 3.添加动画
     [self.mylayer addAnimation:anim forKey:@"ScaleLine"];
     
-//        [self.layer addSublayer:self.mylayer];
+    //        [self.layer addSublayer:self.mylayer];
 }
 -(void)loadAdImageView:(NSString *)imageUrl{
     
@@ -151,7 +155,7 @@
     }
     
     
-//    [adShowImg setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"test"]];
+    //    [adShowImg setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"test"]];
     
     [adShowImg setImage:[UIImage imageNamed:@"test"]];
     
@@ -193,7 +197,7 @@
         adShowImg.frame = CGRectMake(adShowImg.frame.origin.x, 64, adShowImg.frame.size.width, 0);
     } completion:^(BOOL finished) {
         
-//        [self removeFromSuperview];
+        //        [self removeFromSuperview];
         self.hidden = YES;
         
         [self createadShowImg];
@@ -214,7 +218,7 @@
     anim.keyPath = @"bounds";
     //    anim.fromValue = [NSValue valueWithCGPoint:CGPointMake(0, 0)];
     anim.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, 1, 0)];
-    anim.duration = 0.3;
+    anim.duration = AnimationDuration;
     
     /**让图层保持动画执行完毕后的状态**/
     // 动画执行完毕后不要删除动画
@@ -228,33 +232,49 @@
     [self.mylayer addAnimation:anim forKey:@"shrinkLine"];
 }
 
+
 //旋转 closebtn ，flag为yes为逆时针，no为顺时针
 - (void)rotationWithBtn:(UIButton *)button flag:(BOOL)flag
 {
-    // 1.创建动画对象
-    CABasicAnimation *anim = [CABasicAnimation animation];
     
-    // 2.设置动画对象
-    // keyPath决定了执行怎样的动画, 调整哪个属性来执行动画
-    anim.keyPath = @"transform";
-    //    anim.fromValue = [NSNumber numberWithFloat:0];
-    anim.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeRotation(M_PI,0, 0,1.0)];
-    if (!flag) {//flag
-        //总是按最短路径来选择，当顺时针和逆时针的路径相同时，使用逆时针,这里乘以181是让它顺时针,同事z轴改为-1
-        anim.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeRotation(DEGREES_TO_RADIANS(181),0, 0,-1.0)];
+    
+    CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    
+    rotationAnimation.toValue = [NSNumber numberWithFloat:M_PI];
+    if (flag) {
+        rotationAnimation.toValue = [NSNumber numberWithFloat:-M_PI];
     }
     
-    anim.duration = 0.3;
-    
-    /**让图层保持动画执行完毕后的状态**/
-    // 动画执行完毕后不要删除动画
-    anim.removedOnCompletion = NO;
-    // 保持最新的状态
-    anim.fillMode = kCAFillModeForwards;
+    rotationAnimation.duration = AnimationDuration;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = 1;
+    [button.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
     
     
-    // 3.添加动画
-    [button.layer addAnimation:anim forKey:@"rotation"];
+    //    // 1.创建动画对象
+    //    CABasicAnimation *anim = [CABasicAnimation animation];
+    //
+    //    // 2.设置动画对象
+    //    // keyPath决定了执行怎样的动画, 调整哪个属性来执行动画
+    //    anim.keyPath = @"transform";
+    //    //    anim.fromValue = [NSNumber numberWithFloat:0];
+    //    anim.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeRotation(M_PI,0, 0,1.0)];
+    //    if (!flag) {//flag
+    //        //总是按最短路径来选择，当顺时针和逆时针的路径相同时，使用逆时针,这里乘以181是让它顺时针,同事z轴改为-1
+    //        anim.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeRotation(DEGREES_TO_RADIANS(181),0, 0,-1.0)];
+    //    }
+    //
+    //    anim.duration = 0.3;
+    //
+    //    /**让图层保持动画执行完毕后的状态**/
+    //    // 动画执行完毕后不要删除动画
+    //    anim.removedOnCompletion = NO;
+    //    // 保持最新的状态
+    //    anim.fillMode = kCAFillModeForwards;
+    //
+    //
+    //    // 3.添加动画
+    //    [button.layer addAnimation:anim forKey:@"rotation"];
     
     //    [self.mylayer add];
 }
